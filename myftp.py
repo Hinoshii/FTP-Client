@@ -19,6 +19,7 @@ while True:
             clientSocket.close()
             print('221 Goodbye.')
             connected = False
+        print()
         break
 
     elif commands == 'ascii':
@@ -96,13 +97,13 @@ while True:
                         file.write(data)
 
                     size_data = len(data)
-                    
-                    resp = clientSocket.recv(1024)
-                    print(resp.decode(), end='')
-                    print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
                 
                     connectionSocket.close()
                 newsocket.close()
+                
+                resp = clientSocket.recv(1024)
+                print(resp.decode(), end='')
+                print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
         else :
             print('Not connected.')
 
@@ -142,12 +143,14 @@ while True:
                             break
                         print(data_recv.decode(), end='')
 
+                    size_data = len(data)
 
-                connectionSocket.close()
+                    connectionSocket.close()
                 newsocket.close()
+
                 resp = clientSocket.recv(1024)
                 print(resp.decode(), end='')
-
+                print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
         else :
             print('Not connected.')
 
@@ -185,13 +188,12 @@ while True:
                             connectionSocket.sendfile(file)
 
                         connectionSocket.close()
-
-                        resp = clientSocket.recv(1024)
-                        print(resp.decode(), end='')
-
-                        size_data = os.stat(local_path).st_size
-                        print(f'ftp: {size_data} bytes sent in 0.00Seconds veryFast bytes/sec.')
                     newsocket.close()
+
+                    resp = clientSocket.recv(1024)
+                    print(resp.decode(), end='')
+                    size_data = os.stat(local_path).st_size
+                    print(f'ftp: {size_data} bytes sent in 0.00Seconds veryFast bytes/sec.')
             else:
                 print(f'{args[1]}: File not found')
         else :
@@ -255,7 +257,7 @@ while True:
             resp = clientSocket.recv(1024)
             print(resp.decode(), end='')
 
-            username = input('User (127.0.0.1:(none)): ')
+            username = input(f'User ({args[1]}:(none)): ')
             clientSocket.send(str('USER '+ username + '\r\n').encode('utf-8'))
             resp = clientSocket.recv(1024)
             if resp.decode().startswith("501"):
@@ -264,6 +266,7 @@ while True:
             else:
                 print(resp.decode(), end='')
                 password = getpass('Password: ')
+                print()
                 clientSocket.send(str('PASS '+ password + '\r\n').encode('utf-8'))
                 resp = clientSocket.recv(1024)
                 print(resp.decode(), end='')
