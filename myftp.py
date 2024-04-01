@@ -97,15 +97,15 @@ while True:
                     
                     with open(local_path, 'wb') as file:
                         file.write(data)
-
-                    size_data = len(data)
                 
                     connectionSocket.close()
                 newsocket.close()
                 
-                resp = clientSocket.recv(1024)
-                print(resp.decode(), end='')
-                print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
+                if not resp.decode().startswith("5"):
+                    resp = clientSocket.recv(1024)
+                    print(resp.decode(), end='')
+                    size_data = len(data)
+                    print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
         else :
             print('Not connected.')
 
@@ -145,14 +145,14 @@ while True:
                             break
                         print(data_recv.decode(), end='')
 
-                    size_data = len(data)
-
                     connectionSocket.close()
                 newsocket.close()
 
-                resp = clientSocket.recv(1024)
-                print(resp.decode(), end='')
-                print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
+                if not resp.decode().startswith("5"):
+                    resp = clientSocket.recv(1024)
+                    print(resp.decode(), end='')
+                    size_data = len(data)
+                    print(f'ftp: {size_data} bytes received in 0.00Seconds veryFast bytes/sec.')
         else :
             print('Not connected.')
 
@@ -192,10 +192,11 @@ while True:
                         connectionSocket.close()
                     newsocket.close()
 
-                    resp = clientSocket.recv(1024)
-                    print(resp.decode(), end='')
-                    size_data = os.stat(local_path).st_size
-                    print(f'ftp: {size_data} bytes sent in 0.00Seconds veryFast bytes/sec.')
+                    if not resp.decode().startswith("5"):
+                        resp = clientSocket.recv(1024)
+                        print(resp.decode(), end='')
+                        size_data = os.stat(local_path).st_size
+                        print(f'ftp: {size_data} bytes sent in 0.00Seconds veryFast bytes/sec.')
             else:
                 print(f'{args[1]}: File not found')
         else :
@@ -223,6 +224,24 @@ while True:
 
     elif commands == 'user':
         if connected :
+            if len(args) == 1:
+                username = input('Username ')
+                clientSocket.send(str('USER '+ username + '\r\n').encode('utf-8'))
+                resp = clientSocket.recv(1024)
+                if resp.decode().startswith("501"):
+                    print(resp.decode(), end='')
+                    print('Login failed.')
+                else:
+                    print(resp.decode(), end='')
+                    password = getpass('Password: ')
+                    print()
+                    clientSocket.send(str('PASS '+ password + '\r\n').encode('utf-8'))
+                    resp = clientSocket.recv(1024)
+                    print(resp.decode(), end='')
+                    if resp.decode().startswith("530"):
+                        print('Login failed.')
+                continue
+
             username = args[1]
             if len(args) == 2:
                 password = ""
@@ -247,13 +266,22 @@ while True:
             hosts = args[1]
             clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if len(args) == 3:
-                clientSocket.connect((args[1], int(args[2])))
+                try :
+                    clientSocket.connect((args[1], int(args[2])))
+                except :
+                    print(f'Unknown host {args[1]}.')
+                    continue
             else :
-                clientSocket.connect((args[1], 21))
-            resp = clientSocket.recv(1024)
+                try:
+                    clientSocket.connect((args[1], 21))
+                except :
+                    print(f'Unknown host {args[1]}.')
+                    continue
 
+            resp = clientSocket.recv(1024)
             if resp.decode().startswith("220"):
                 print(f"Connected to {args[1]}")
+
             print(resp.decode(), end='')
             clientSocket.send('OPTS UTF8 ON\r\n'.encode('utf-8'))
             resp = clientSocket.recv(1024)

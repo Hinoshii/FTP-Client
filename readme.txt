@@ -1,8 +1,12 @@
 \\_ Commands Instruction _//
 
-** I didn't check the timeout of the connection, so if it is timed out... yeah my code probably collapse
+<- DISCLAIMER ->
+1- ALL commands are tested in Window11 Command prompt
+2- There are some function that if u enter commands without arguments it'll ask u to put it (like rename, it'll ask u to enter "From name") this part i did not do it
+3- Commands usage is listed below
+4- I didn't check the timeout of the connection, so if it is timed out... yeah my code probably error
 
-!!!! MUST type in every argument needed (*), or else my code will collapse !!!!
+!!!! MUST type in every argument needed (*), or else my code will error !!!!
 
 behind '*' is the argument u MUST type in to use the commands
 behind '#' is the OPTIONAL argument to use the commands
@@ -10,7 +14,8 @@ behind '#' is the OPTIONAL argument to use the commands
 open *hostname/ip #port 
 (Default port number is 21)
 
-user *username *password
+user #username #password
+(This one i do the prompt thingy)
 
 rename *filename *newfilename
 
