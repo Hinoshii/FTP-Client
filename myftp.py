@@ -16,8 +16,10 @@ while True:
 
     if commands == 'quit' or commands == 'bye':
         if connected :
+            clientSocket.send(str('QUIT\r\n').encode('utf-8'))
+            resp = clientSocket.recv(1024)
+            print(resp.decode(), end='')
             clientSocket.close()
-            print('221 Goodbye.')
             connected = False
         print()
         break
@@ -277,8 +279,10 @@ while True:
 
     elif commands == 'disconnect' or commands == 'close':
         if connected :
+            clientSocket.send(str('QUIT\r\n').encode('utf-8'))
+            resp = clientSocket.recv(1024)
+            print(resp.decode(), end='')
             clientSocket.close()
-            print('221 Goodbye.')
             connected = False
         else :
             print('Not connected.')
